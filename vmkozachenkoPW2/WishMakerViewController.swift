@@ -5,9 +5,15 @@ final class WishMakerViewController : UIViewController {
     // MARK: - Constants
     
     enum Constants {
+        static let titleText = "Wish Maker"
         static let titleFontSize : CGFloat = 40
         static let titleLeading : CGFloat = 20
         static let titleTop : CGFloat = 20
+        
+        static let descriptionText = "This app will bring you joy and will fulfill three of your wishes!\n\t*The first wish is to change the background title."
+        static let descriptionFontSize : CGFloat = 20
+        static let descriptionLeading : CGFloat = 20
+        static let descriptionTop : CGFloat = 50
         
         static let stackCornerRadius : CGFloat = 20
         static let stackBottom : CGFloat = -50
@@ -39,22 +45,36 @@ final class WishMakerViewController : UIViewController {
         configureSliders()
     }
     
-    // MARK: - Configure Title
+    // MARK: - Configure Title and Description
     
     private func configureTitle() {
         // initialize and customise title
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = "Wish Maker"
+        title.text = Constants.titleText
         title.font = UIFont.systemFont(ofSize: Constants.titleFontSize)
         title.textColor = .orange
         
+        // initialize and customise description
+        let description = UILabel()
+        description.translatesAutoresizingMaskIntoConstraints = false
+        description.text = Constants.descriptionText
+        description.font = UIFont.systemFont(ofSize: Constants.descriptionFontSize)
+        description.textColor = .orange
+        description.numberOfLines = 0
+        
+        
         // place title on view
         view.addSubview(title)
+        view.addSubview(description)
         NSLayoutConstraint.activate([
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: Constants.titleLeading),
-            title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.titleTop)
+            title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.titleTop),
+            
+            description.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            description.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.descriptionLeading),
+            description.topAnchor.constraint(equalTo: title.bottomAnchor, constant: Constants.descriptionTop)
         ])
     }
     
