@@ -29,6 +29,11 @@ final class WishMakerViewController : UIViewController {
         static let maxColorVal : Double = 255
     }
     
+    let mainTitle = UILabel()
+    let mainDescription = UILabel()
+    let slidersStack = UIStackView()
+    
+    
     // MARK: - viewDidLoad
     
     override func viewDidLoad() {
@@ -42,52 +47,56 @@ final class WishMakerViewController : UIViewController {
     private func configureUI() {
         view.backgroundColor = .black
         configureTitle()
+        configureDescription()
         configureSliders()
     }
     
-    // MARK: - Configure Title and Description
+    // MARK: - Configure Title
     
     private func configureTitle() {
-        // initialize and customise title
-        let title = UILabel()
-        title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = Constants.titleText
-        title.font = UIFont.systemFont(ofSize: Constants.titleFontSize)
-        title.textColor = .orange
-        
-        // initialize and customise description
-        let description = UILabel()
-        description.translatesAutoresizingMaskIntoConstraints = false
-        description.text = Constants.descriptionText
-        description.font = UIFont.systemFont(ofSize: Constants.descriptionFontSize)
-        description.textColor = .orange
-        description.numberOfLines = 0
-        
+        // customise title
+        mainTitle.translatesAutoresizingMaskIntoConstraints = false
+        mainTitle.text = Constants.titleText
+        mainTitle.font = UIFont.systemFont(ofSize: Constants.titleFontSize)
+        mainTitle.textColor = .orange
         
         // place title on view
-        view.addSubview(title)
-        view.addSubview(description)
+        view.addSubview(mainTitle)
         NSLayoutConstraint.activate([
-            title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            title.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: Constants.titleLeading),
-            title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.titleTop),
-            
-            description.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            description.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.descriptionLeading),
-            description.topAnchor.constraint(equalTo: title.bottomAnchor, constant: Constants.descriptionTop)
+            mainTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mainTitle.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: Constants.titleLeading),
+            mainTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.titleTop),
+        ])
+    }
+    
+    // MARK: - Configure description
+    
+    private func configureDescription() {
+        // customise description
+        mainDescription.translatesAutoresizingMaskIntoConstraints = false
+        mainDescription.text = Constants.descriptionText
+        mainDescription.font = UIFont.systemFont(ofSize: Constants.descriptionFontSize)
+        mainDescription.textColor = .orange
+        mainDescription.numberOfLines = 0
+        
+        // place description on view
+        view.addSubview(mainDescription)
+        NSLayoutConstraint.activate([
+            mainDescription.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mainDescription.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.descriptionLeading),
+            mainDescription.topAnchor.constraint(equalTo: mainTitle.bottomAnchor, constant: Constants.descriptionTop)
         ])
     }
     
     // MARK: - Configure Sliders
     
     private func configureSliders() {
-        let stack = UIStackView()
         // set stack settings
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.layer.cornerRadius = Constants.stackCornerRadius
-        stack.clipsToBounds = true
-        stack.axis = .vertical
-        view.addSubview(stack)
+        slidersStack.translatesAutoresizingMaskIntoConstraints = false
+        slidersStack.layer.cornerRadius = Constants.stackCornerRadius
+        slidersStack.clipsToBounds = true
+        slidersStack.axis = .vertical
+        view.addSubview(slidersStack)
         
         // initialise sliders
         let redSlider = CustomSlider(title: Constants.redSliderTitle, minValue: Constants.sliderMin, maxValue: Constants.sliderMax)
@@ -117,17 +126,17 @@ final class WishMakerViewController : UIViewController {
             self?.view.backgroundColor = .init(red: red, green: green, blue: normalisedValue, alpha: alpha)
         }
         
-        // add sliders to stack view
+        // add sliders to slidersStack view
         for slider in [redSlider, greenSlider, blueSlider] {
             slider.translatesAutoresizingMaskIntoConstraints = false
-            stack.addArrangedSubview(slider)
+            slidersStack.addArrangedSubview(slider)
         }
         
-        // set constraints to stack
+        // set constraints to slidersStack
         NSLayoutConstraint.activate([
-            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.stackBottom),
-            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.stackLeading)
+            slidersStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            slidersStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.stackBottom),
+            slidersStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.stackLeading)
         ])
     }
 }
