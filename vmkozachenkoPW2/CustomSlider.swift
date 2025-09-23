@@ -60,6 +60,14 @@ final class CustomSlider : UIView {
         ])
     }
     
+    // MARK: - Set value
+    
+    func setValue(value: Double) {
+        slider.value = Float(value)
+    }
+    
+    // MARK: - Slider value changed
+    
     @objc
     private func sliderValueChanged() {
         ValueChanged?(Double(slider.value))

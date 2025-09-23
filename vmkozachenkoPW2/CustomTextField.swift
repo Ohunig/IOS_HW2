@@ -5,8 +5,6 @@ final class CustomTextField : UIView {
     // MARK: - Constants
     
     enum Constants {
-        static let heightOfAllField : Double = 30
-        
         static let buttonTitle = "+"
         static let buttonWidth : Double = 50
     }
@@ -18,12 +16,9 @@ final class CustomTextField : UIView {
     let textField = UITextField()
     let sendButton = UIButton(type: .system)
     
-    let width : Double
-    
     // MARK: - Inits
     
-    init(width: Double, placeholder: String) {
-        self.width = width >= Constants.buttonWidth ? width : Constants.buttonWidth
+    init(placeholder: String) {
         super.init(frame: .zero)
         
         sendButton.addTarget(self, action: #selector(buttonWasPressed), for: .touchDown)
@@ -54,19 +49,15 @@ final class CustomTextField : UIView {
         self.addSubview(textField)
         self.addSubview(sendButton)
         NSLayoutConstraint.activate([
-            self.heightAnchor.constraint(equalToConstant: Constants.heightOfAllField),
-            self.widthAnchor.constraint(equalToConstant: width),
-            
             textField.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            textField.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            textField.heightAnchor.constraint(equalToConstant: Constants.heightOfAllField),
-            textField.widthAnchor.constraint(equalToConstant: width - Constants.buttonWidth),
+            textField.topAnchor.constraint(equalTo: self.topAnchor),
+            textField.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             
             sendButton.leadingAnchor.constraint(equalTo: textField.trailingAnchor),
             sendButton.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            sendButton.widthAnchor.constraint(equalToConstant: Constants.buttonWidth),
-            sendButton.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            sendButton.heightAnchor.constraint(equalToConstant: Constants.heightOfAllField)
+            sendButton.topAnchor.constraint(equalTo: self.topAnchor),
+            sendButton.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            sendButton.widthAnchor.constraint(equalToConstant: Constants.buttonWidth)
         ])
     }
     
