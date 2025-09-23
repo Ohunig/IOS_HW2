@@ -16,8 +16,12 @@ final class WishMakerViewController : UIViewController {
         static let descriptionTop : CGFloat = 50
         
         static let stackCornerRadius : CGFloat = 20
-        static let stackBottom : CGFloat = -50
         static let stackLeading : CGFloat = 20
+        static let stackTop : CGFloat = 30
+        
+        static let textFieldPlaceholder = "Write hex color"
+        static let textFieldWidth : CGFloat = 200
+        static let textFieldLeading : CGFloat = 50
         
         static let redSliderTitle = "Red"
         static let greenSliderTitle = "Green"
@@ -27,11 +31,27 @@ final class WishMakerViewController : UIViewController {
         static let sliderMax : CGFloat = 255
         
         static let maxColorVal : Double = 255
+        
+        static let segmentedControlFirst = "Picker"
+        static let segmentedControlSecond = "HEX"
+        static let segmentedControlThird = "Random"
+        static let segmentedControlLeading : CGFloat = 30
+        static let segmentedControlBottom : CGFloat = -50
+        static let segmetedControlSelectedSegmentIndex = 0
     }
+    
+    // MARK: - Fields
     
     let mainTitle = UILabel()
     let mainDescription = UILabel()
+    
+    // Segmented control
+    let segmentedControl = UISegmentedControl()
+    
+    // Color controllers
     let slidersStack = UIStackView()
+    let textField = CustomTextField(width: Constants.textFieldWidth ,placeholder: Constants.textFieldPlaceholder)
+    let randomButton = UIButton(type: .system)
     
     
     // MARK: - viewDidLoad
@@ -39,6 +59,7 @@ final class WishMakerViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         configureUI()
     }
     
@@ -49,6 +70,8 @@ final class WishMakerViewController : UIViewController {
         configureTitle()
         configureDescription()
         configureSliders()
+        configureTextField()
+        configureSegmentedControl()
     }
     
     // MARK: - Configure Title
@@ -135,8 +158,88 @@ final class WishMakerViewController : UIViewController {
         // set constraints to slidersStack
         NSLayoutConstraint.activate([
             slidersStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            slidersStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.stackBottom),
-            slidersStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.stackLeading)
+            slidersStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            slidersStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.stackLeading),
+            slidersStack.topAnchor.constraint(greaterThanOrEqualTo: mainDescription.bottomAnchor, constant: Constants.stackTop)
         ])
+    }
+    
+    // MARK: - Configure Text Field
+    
+    private func configureTextField() {
+        
+        textField.buttonPressed = { [weak self] in
+            guard let self = self else { return }
+            
+            self.dismissKeyboard()
+            
+            let text = self.textField.getText()
+            if (UIColor.validateHEX(hex: text)) {
+                self.view.backgroundColor = UIColor(hex: text)
+            }
+        }
+        
+        textField.translatesAutoresizingMaskIntoConstraints = false;
+        view.addSubview(textField)
+        NSLayoutConstraint.activate([
+            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.textFieldLeading)
+        ])
+    }
+    
+    // MARK: - Configure seg control
+    
+    private func configureSegmentedControl() {
+        segmentedControl.backgroundColor = .white
+        segmentedControl.selectedSegmentTintColor = .orange
+        
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlFirst, at: 0, animated: false)
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlSecond, at: 1, animated: false)
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlThird, at: 2, animated: false)
+        
+        segmentedControl.selectedSegmentIndex = Constants.segmetedControlSelectedSegmentIndex
+        textField.isHidden = true
+        randomButton.isHidden = true
+        
+        segmentedControl.addTarget(self, action: #selector(segmentControlTapped), for: .valueChanged)
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false;
+        
+        view.addSubview(segmentedControl)
+        NSLayoutConstraint.activate([
+            segmentedControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.segmentedControlLeading),
+            segmentedControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.segmentedControlBottom)
+        ])
+    }
+    
+    // MARK: - Segment control tapped
+    
+    @objc
+    private func segmentControlTapped() {
+        // hide all controllers
+        for controller in [slidersStack, textField, randomButton] {
+            controller.isHidden = true;
+        }
+        // select one
+        let mode = segmentedControl.selectedSegmentIndex
+        switch mode {
+        case 0:
+            
+            slidersStack.isHidden = false;
+        case 1:
+            textField.isHidden = false;
+        case 2:
+            randomButton.isHidden = false;
+        default:
+            break
+        }
+    }
+    
+    // MARK: - Dismiss Keyboard
+    
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
