@@ -5,8 +5,6 @@ final class WishMakerViewController : UIViewController {
     // MARK: - Constants
     
     enum Constants {
-        static let viewColor = "#123456"
-        
         static let titleText = "Wish Maker"
         static let titleFontSize : CGFloat = 40
         static let titleLeading : CGFloat = 20
@@ -25,6 +23,10 @@ final class WishMakerViewController : UIViewController {
         static let textFieldPlaceholder = "Write hex color"
         static let textFieldLeading : CGFloat = 50
         
+        static let randomButtonTitle = "Random"
+        static let randomButtonLeading : CGFloat = 100
+        static let randomButtonHeight : CGFloat = 40
+        
         static let segmentedControlFirst = "Picker"
         static let segmentedControlSecond = "HEX"
         static let segmentedControlThird = "Random"
@@ -35,10 +37,11 @@ final class WishMakerViewController : UIViewController {
     
     // MARK: - Fields
     
+    let model = WishColorModel()
+    
     let mainTitle = UILabel()
     let mainDescription = UILabel()
     
-    // Segmented control
     let segmentedControl = UISegmentedControl()
     
     // Color controllers
@@ -52,6 +55,9 @@ final class WishMakerViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        model.onColorChanged = { [weak self] color in
+            self?.view.backgroundColor = UIColor(red: color.red, green: color.green, blue: color.blue, alpha: color.alpha)
+        }
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         configureUI()
     }
@@ -59,11 +65,11 @@ final class WishMakerViewController : UIViewController {
     // MARK: Configure UI
     
     private func configureUI() {
-        view.backgroundColor = UIColor(hex: Constants.viewColor)
         configureTitle()
         configureDescription()
         configureSliders()
         configureTextField()
+        configureRandomButton()
         configureSegmentedControl()
     }
     
@@ -110,28 +116,28 @@ final class WishMakerViewController : UIViewController {
         
         // assign what valueChanged do to all our sliders
         rgbSlider.redSlider.ValueChanged = { [weak self] value in
-            guard let (_, green, blue, alpha) = self?.view.backgroundColor?.getRGBA()
-            else { return }
+            guard let self = self else { return }
             let normalisedValue = value / Constants.maxColorVal
-            self?.view.backgroundColor = .init(red: normalisedValue, green: green, blue: blue, alpha: alpha)
+            let (_, green, blue, alpha) = self.model.color.getRGBA()
+            self.model.setColor(red: normalisedValue, green: green, blue: blue, alpha: alpha)
         }
         
         rgbSlider.greenSlider.ValueChanged = { [weak self] value in
-            guard let (red, _, blue, alpha) = self?.view.backgroundColor?.getRGBA()
-            else { return }
+            guard let self = self else { return }
             let normalisedValue = value / Constants.maxColorVal
-            self?.view.backgroundColor = .init(red: red, green: normalisedValue, blue: blue, alpha: alpha)
+            let (red, _, blue, alpha) = self.model.color.getRGBA()
+            self.model.setColor(red: red, green: normalisedValue, blue: blue, alpha: alpha)
         }
         
         rgbSlider.blueSlider.ValueChanged = { [weak self] value in
-            guard let (red, green, _, alpha) = self?.view.backgroundColor?.getRGBA()
-            else { return }
+            guard let self = self else { return }
             let normalisedValue = value / Constants.maxColorVal
-            self?.view.backgroundColor = .init(red: red, green: green, blue: normalisedValue, alpha: alpha)
+            let (red, green, _, alpha) = self.model.color.getRGBA()
+            self.model.setColor(red: red, green: green, blue: normalisedValue, alpha: alpha)
         }
         
         // update rgbSlider's colors
-        rgbSlider.updateColors(view.backgroundColor?.getRGBA())
+        rgbSlider.updateColors(self.model.color.getRGBA())
         
         // add rgbSlider to view
         rgbSlider.translatesAutoresizingMaskIntoConstraints = false
@@ -153,10 +159,8 @@ final class WishMakerViewController : UIViewController {
             
             self.dismissKeyboard()
             
-            let text = self.textField.getText()
-            if (UIColor.validateHEX(hex: text)) {
-                self.view.backgroundColor = UIColor(hex: text)
-            }
+            let hex = self.textField.getText()
+            self.model.setColor(hex: hex)
         }
         
         textField.translatesAutoresizingMaskIntoConstraints = false;
@@ -169,8 +173,22 @@ final class WishMakerViewController : UIViewController {
     }
     
     // MARK: - Configure random button
+    
     private func configureRandomButton() {
+        randomButton.addTarget(self, action: #selector(randomButtonTapped), for: .touchDown)
+        randomButton.backgroundColor = .orange
+        randomButton.setTitle(Constants.randomButtonTitle, for: .normal)
+        randomButton.setTitleColor(.white, for: .normal)
+        randomButton.translatesAutoresizingMaskIntoConstraints = false;
         
+        view.addSubview(randomButton)
+        NSLayoutConstraint.activate([
+            randomButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            randomButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            randomButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Constants.randomButtonLeading),
+            randomButton.heightAnchor.constraint(equalToConstant: Constants.randomButtonHeight)
+            
+        ])
     }
     
     // MARK: - Configure seg control
@@ -178,10 +196,12 @@ final class WishMakerViewController : UIViewController {
     private func configureSegmentedControl() {
         segmentedControl.backgroundColor = .white
         segmentedControl.selectedSegmentTintColor = .orange
-        
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
         segmentedControl.insertSegment(withTitle: Constants.segmentedControlFirst, at: 0, animated: false)
         segmentedControl.insertSegment(withTitle: Constants.segmentedControlSecond, at: 1, animated: false)
         segmentedControl.insertSegment(withTitle: Constants.segmentedControlThird, at: 2, animated: false)
+        
         
         segmentedControl.selectedSegmentIndex = Constants.segmetedControlSelectedSegmentIndex
         textField.isHidden = true
@@ -198,6 +218,14 @@ final class WishMakerViewController : UIViewController {
         ])
     }
     
+    // MARK: - Random button tapped
+    
+    @objc
+    private func randomButtonTapped() {
+        let color = ColorValue.random()
+        model.setColor(red: color.red, green: color.green, blue: color.blue)
+    }
+    
     // MARK: - Segment control tapped
     
     @objc
@@ -210,7 +238,7 @@ final class WishMakerViewController : UIViewController {
         let mode = segmentedControl.selectedSegmentIndex
         switch mode {
         case 0:
-            rgbSlider.updateColors(view.backgroundColor?.getRGBA())
+            rgbSlider.updateColors(model.color.getRGBA())
             rgbSlider.isHidden = false;
         case 1:
             textField.isHidden = false;

@@ -1,10 +1,24 @@
-import UIKit
+import Foundation
 
-extension UIColor {
+public struct ColorValue {
+    
+    public var red : CGFloat
+    public var green : CGFloat
+    public var blue : CGFloat
+    public var alpha : CGFloat
+    
+    // MARK: - Standart constructor
+    
+    public init(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.alpha = alpha
+    }
     
     // MARK: - Constructor from Hex
     
-    convenience init(hex: String, alpha: Float = 1) {
+    public init(hex: String, alpha: CGFloat = 1) {
         // think that we have correct hex
         let hexInt = Int(hex.suffix(hex.count - 1), radix: 16) ?? 0
         // two in the eighth degree minus one
@@ -16,9 +30,20 @@ extension UIColor {
             alpha: CGFloat(alpha))
     }
     
+    // MARK: - Random color
+    
+    public static func random() -> ColorValue {
+        return ColorValue(
+            red: CGFloat.random(in: 0...1),
+            green: CGFloat.random(in: 0...1),
+            blue: CGFloat.random(in: 0...1),
+            alpha: 1
+        )
+    }
+    
     // MARK: - HEX validator
     
-    static func validateHEX(hex: String) -> Bool {
+    public static func validateHEX(hex: String) -> Bool {
         if (hex.count != 7 || hex[hex.startIndex] != "#") {
             return false;
         }
@@ -31,18 +56,9 @@ extension UIColor {
         return true;
     }
     
-    // MARK: - RGBA getter
+    // MARK: - Get RGBA
     
-    func getRGBA() -> (CGFloat, CGFloat, CGFloat, CGFloat)? {
-        var red : CGFloat = 0
-        var green : CGFloat = 0
-        var blue : CGFloat = 0
-        var alpha : CGFloat = 0
-        
-        // get all colors
-        guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        else { return nil }
-        
+    public func getRGBA() -> (CGFloat, CGFloat, CGFloat, CGFloat) {
         return (red, green, blue, alpha)
     }
 }

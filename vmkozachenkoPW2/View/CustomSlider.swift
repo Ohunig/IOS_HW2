@@ -25,6 +25,7 @@ final class CustomSlider : UIView {
         
         // set title and slider settings
         self.title.text = title
+        self.title.textColor = .black
         slider.minimumValue = Float(minValue)
         slider.maximumValue = Float(maxValue)
         slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)

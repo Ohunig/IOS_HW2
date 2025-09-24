@@ -24,7 +24,7 @@ final class CustomTextField : UIView {
         sendButton.addTarget(self, action: #selector(buttonWasPressed), for: .touchDown)
         sendButton.setTitle(Constants.buttonTitle, for: .normal)
         
-        textField.placeholder = placeholder
+        textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.gray])
         textField.isUserInteractionEnabled = true
         
         configureUI()
@@ -39,8 +39,10 @@ final class CustomTextField : UIView {
     
     private func configureUI() {
         textField.backgroundColor = .white
+        textField.textColor = .black
         
         sendButton.backgroundColor = .orange
+        sendButton.setTitleColor(.white, for: .normal)
         
         for view in [textField, sendButton] {
             view.translatesAutoresizingMaskIntoConstraints = false;
